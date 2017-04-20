@@ -40,7 +40,7 @@ ffmpeg_cmd=(
   ffmpeg
   -re                     # Read from input at its native framerate. Best for real-time/streaming output.
   -f lavfi -i anullsrc    # No input audio.
-  -i -                    # Use stdin for video.
+  -i -                    # Use stdin for video (from raspivid).
   -acodec aac             # Use AAC codec for audio (Periscope requirement).
   -b:a 0                  # Zero audio bitrate since we have no input audio.
   -map 0:a                # Use stream 0 for audio (anullsrc).
