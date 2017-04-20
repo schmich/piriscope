@@ -52,6 +52,10 @@ Periscope:
 
 - Stream name/key
 - Portrait vs. landscape video
+- Horizontal/vertical flip
+- Bitrate (Periscope guidelines)
+- FPS (Periscope guidelines)
+- Other/arbitrary `raspivid`/`ffmpeg` options
 
 ## Packaging
 
