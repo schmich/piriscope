@@ -42,8 +42,20 @@ raspivid -o - -t 0 -w 960 -h 540 -vf -hf -fps 30 -b 800000 |\
   ffmpeg -re -f lavfi -i anullsrc -i - -acodec aac -b:a 0 -map 0:a -map 1:v -f h264 -vcodec copy -g 60 -f flv rtmp://va.pscp.tv:80/x/xxxxxxxxxxxx
 ```
 
+Periscope:
+
+- Steps to enable stream via Periscope app
+- App/phone required?
+- Screencast from phone
+
+## Configuration
+
+- Stream name/key
+- Portrait vs. landscape video
+
 ## Packaging
 
 - Bare script, roll-your-own
-- Raspbian (.deb) package
-- Flashable image, configuration via `/boot`
+- Debian service
+- Debian package (.deb)
+- Flashable Raspbian image, configuration via `/boot`
