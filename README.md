@@ -4,6 +4,26 @@ Stream to Periscope from the Raspberry Pi.
 
 ## Setup
 
+Raspberry Pi:
+
+- Download/install Etcher
+- Download RPi image
+- Flash image to SD card
+- `touch /Volumes/boot/ssh`
+- `cp wpa_supplicant.conf /Volumes/boot`
+- `sudo raspi-config` (enable SSH, enable camera)
+- (setup SSH keys)
+- (remove password-based SSH)
+- (update pi user password)
+- `sudo apt-get install -y vlc`
+- https://www.jeffgeerling.com/blogs/jeff-geerling/raspberry-pi-zero-conserve-energy
+- `sudo update-rc.d -f bluetooth remove`
+
+Video setup (maybe unnecessary with `raspivid`):
+
+- `sudo modprobe bcm2835-v4l2`
+- `sudo echo bcm2835-v4l2 >> /etc/modules`
+
 Server URL: rtmp://va.pscp.tv:80/x  
 Stream name/key: xxxxxxxxxxxxx
 
