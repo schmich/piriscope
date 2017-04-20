@@ -63,3 +63,8 @@ Periscope:
 - Debian service
 - Debian package (.deb)
 - Flashable Raspbian image, configuration via `/boot`
+
+## License
+
+Copyright &copy; 2017 Chris Schmich  
+MIT License. See [LICENSE](LICENSE) for details.
