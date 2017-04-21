@@ -1,0 +1,14 @@
+Source: piriscope
+Section: video
+Priority: optional
+Maintainer: Chris Schmich <schmch@gmail.com>
+Build-Depends: debhelper (>= 9)
+Standards-Version: 3.9.6
+Homepage: https://github.com/schmich/piriscope
+
+Package: piriscope
+Architecture: all
+Depends:
+Description: Stream to Periscope from the Raspberry Pi.
+ Piriscope runs as a service to enable streaming to Periscope
+ from the Raspberry Pi using a camera module.
