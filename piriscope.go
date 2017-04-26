@@ -101,10 +101,15 @@ func main() {
   app := cli.App("piriscope", "Piriscope - https://github.com/schmich/piriscope")
   key := app.StringOpt("k key", "", "Periscope stream key")
   conf := app.StringOpt("c conf", "", "Configuration file")
+  verbose := app.BoolOpt("v verbose", false, "Verbose output")
 
-  app.Version("v version", "piriscope " + version + " " + commit)
+  app.Version("version", "piriscope " + version + " " + commit)
 
   app.Action = func () {
+    if *verbose {
+      log.SetLevel(log.DebugLevel)
+    }
+
     var fileConfig configuration
     if *conf != "" {
       content, err := ioutil.ReadFile(*conf)
