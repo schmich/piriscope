@@ -1,0 +1,8 @@
+FROM debian:latest
+MAINTAINER Chris Schmich <schmch@gmail.com>
+RUN apt-get update \
+ && apt-get install -y build-essential ruby ruby-dev
+RUN gem install fpm
+COPY . /src
+WORKDIR /src
+CMD ["/bin/bash", "/src/build-deb.sh"]

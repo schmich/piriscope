@@ -1,10 +1,7 @@
-src := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
-package := piriscope_1.0-1_all.deb
+deb: *.deb
 
-$(package):
-	ruby build-docker.rb
+piriscope: piriscope.go
+	ruby -I. build-go-docker.rb
 
-deb: $(package)
-
-inspect: deb
-	docker run -it --rm -v $(src)$(package):/root/$(package) --workdir /root debian bash
+%.deb: piriscope
+	ruby -I. build-deb-docker.rb
