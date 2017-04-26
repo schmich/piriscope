@@ -9,7 +9,7 @@ piriscope: piriscope.go
 smoke: piriscope.go
 	go build -o piriscope.tmp && rm piriscope.tmp
 
-upload: smoke *.deb
+upload: *.deb
 	ssh pi@pi "rm ~/piriscope*.deb" && \
-		scp *.deb pi@pi:~/ && \
-		ssh pi@pi "sudo dpkg -P piriscope && sudo dpkg -i ~/piriscope*.deb"
+	scp *.deb pi@pi:~/ && \
+	ssh pi@pi "sudo dpkg -P piriscope && sudo dpkg -i ~/piriscope*.deb"
