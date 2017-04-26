@@ -22,7 +22,7 @@ Raspberry Pi:
 Video setup (maybe unnecessary with `raspivid`):
 
 - `sudo modprobe bcm2835-v4l2`
-- `sudo echo bcm2835-v4l2 >> /etc/modules`
+- `echo bcm2835-v4l2 | sudo tee -a /etc/modules`
 
 Server URL: rtmp://va.pscp.tv:80/x  
 Stream name/key: xxxxxxxxxxxxx

@@ -49,9 +49,9 @@ func mergeString(l string, r string) string {
 
 func mergeInt(l int, r int) int {
   if r == 0 {
-    return r
-  } else {
     return l
+  } else {
+    return r
   }
 }
 
