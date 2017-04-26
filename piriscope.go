@@ -224,7 +224,7 @@ func main() {
 
     ffmpegStdin, err := ffmpeg.StdinPipe()
     if err != nil {
-      panic(err)
+      log.Fatal(err)
     }
 
     raspivid.Stderr = os.Stderr
