@@ -1,4 +1,4 @@
-$version = `git tag`.lines.last&.strip || '1.5.0'
+$version = `git tag`.lines.last&.strip
 if !$version
   puts 'No tagged version, see git tag.'
   exit 1
