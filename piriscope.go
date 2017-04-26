@@ -41,6 +41,13 @@ func joinProps(props map[string]string, kvSeparator string, fieldSeparator strin
   return strings.Join(parts, fieldSeparator)
 }
 
+func showCommand(cmd *exec.Cmd) {
+  log.WithFields(log.Fields{
+    "cmd": cmd.Path,
+    "args": strings.Join(cmd.Args[1:], " "),
+  }).Debug("Running command")
+}
+
 func mergeString(l string, r string) string {
   if r == "" {
     return l
@@ -159,8 +166,25 @@ func main() {
       "video_bitrate": bitrate,
     }
 
-    exec.Command("v4l2-ctl", "--set-fmt-video=" + joinProps(videoProps, "=", ","))
-    exec.Command("v4l2-ctl", "--set-ctrl=" + joinProps(controlProps, "=", ","))
+    v4l2 := exec.Command("v4l2-ctl", "--set-fmt-video=" + joinProps(videoProps, "=", ","))
+    v4l2.Stdout = os.Stdout
+    v4l2.Stderr = os.Stderr
+
+    showCommand(v4l2)
+    err := v4l2.Run()
+    if err != nil {
+      log.Fatal(err)
+    }
+
+    v4l2 = exec.Command("v4l2-ctl", "--set-ctrl=" + joinProps(controlProps, "=", ","))
+    v4l2.Stdout = os.Stdout
+    v4l2.Stderr = os.Stderr
+
+    showCommand(v4l2)
+    err = v4l2.Run()
+    if err != nil {
+      log.Fatal(err)
+    }
 
     raspividArgs := []string{
       "-o", "-",                        // Write video to stdout.
@@ -213,6 +237,9 @@ func main() {
       ffmpegStdin.Close()
       ffmpeg.Wait()
     }()
+
+    showCommand(raspivid)
+    showCommand(ffmpeg)
 
     ffmpeg.Start()
     raspivid.Start()
