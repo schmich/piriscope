@@ -29,6 +29,8 @@ type video struct {
   Sharpness int `json:"sharpness"`
   Quality int `json:"quality"`
   Bitrate int `json:"bitrate"`
+  VFlip bool `json:"vflip"`
+  HFlip bool `json:"hflip"`
 }
 
 func joinProps(props map[string]string, kvSeparator string, fieldSeparator string) string {
@@ -55,6 +57,14 @@ func mergeInt(l int, r int) int {
   }
 }
 
+func mergeBool(l bool, r bool, def bool) bool {
+  if r == def {
+    return l
+  } else {
+    return r
+  }
+}
+
 func mergePeriscope(l *periscope, r *periscope) *periscope {
   return &periscope{
     Key: mergeString(l.Key, r.Key),
@@ -68,6 +78,8 @@ func mergeVideo(l *video, r *video) *video {
     Sharpness: mergeInt(l.Sharpness, r.Sharpness),
     Quality: mergeInt(l.Quality, r.Quality),
     Bitrate: mergeInt(l.Bitrate, r.Bitrate),
+    VFlip: mergeBool(l.VFlip, r.VFlip, false),
+    HFlip: mergeBool(l.HFlip, r.HFlip, false),
   }
 }
 
@@ -150,19 +162,26 @@ func main() {
     exec.Command("v4l2-ctl", "--set-fmt-video=" + joinProps(videoProps, "=", ","))
     exec.Command("v4l2-ctl", "--set-ctrl=" + joinProps(controlProps, "=", ","))
 
-    raspivid := exec.Command(
-      "raspivid",
+    raspividArgs := []string{
       "-o", "-",                        // Write video to stdout.
       "-t", "0",                        // Continuous capturing (no timeout).
       "-w", width,                      // Output video width.
       "-h", height,                     // Output video height.
-      "-vf", "-hf",                     // Flip video vertically/horizontally.
       "-fps", "30",                     // Capture video at 30 frames per second.
       "-b", bitrate,                    // Capture video bitrate.
-    )
+    }
 
-    ffmpeg := exec.Command(
-      "ffmpeg",
+    if config.Video.VFlip {
+      raspividArgs = append(raspividArgs, "-vf")
+    }
+
+    if config.Video.HFlip {
+      raspividArgs = append(raspividArgs, "-hf")
+    }
+
+    raspivid := exec.Command("raspivid", raspividArgs...)
+
+    ffmpegArgs := []string{
       "-re",                            // Read from input at its native framerate. Best for real-time/streaming output.
       "-f", "lavfi", "-i", "anullsrc",  // No input audio.
       "-i", "-",                        // Use stdin for video (from raspivid).
@@ -175,7 +194,9 @@ func main() {
       "-g", "60",                       // Keyframe interval: one keyframe every 60 frames (2 seconds for 30 fps video; Periscope requirement).
       "-f", "flv",                      // Package output in a Flash Video container (Periscope requirement).
       streamUrl,                        // RTMP streaming destination.
-    )
+    }
+
+    ffmpeg := exec.Command("ffmpeg", ffmpegArgs...)
 
     ffmpegStdin, err := ffmpeg.StdinPipe()
     if err != nil {
