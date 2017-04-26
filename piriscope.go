@@ -152,29 +152,29 @@ func main() {
 
     raspivid := exec.Command(
       "raspivid",
-      "-o", "-",
-      "-t", "0",
-      "-w", width,
-      "-h", height,
-      "-vf", "-hf",
-      "-fps", "30",
-      "-b", bitrate,
+      "-o", "-",                        // Write video to stdout.
+      "-t", "0",                        // Continuous capturing (no timeout).
+      "-w", width,                      // Output video width.
+      "-h", height,                     // Output video height.
+      "-vf", "-hf",                     // Flip video vertically/horizontally.
+      "-fps", "30",                     // Capture video at 30 frames per second.
+      "-b", bitrate,                    // Capture video bitrate.
     )
 
     ffmpeg := exec.Command(
       "ffmpeg",
-      "-re",
-      "-f", "lavfi", "-i", "anullsrc",
-      "-i", "-",
-      "-acodec", "aac",
-      "-b:a", "0",
-      "-map", "0:a",
-      "-map", "1:v",
-      "-f", "h264",
-      "-vcodec", "copy",
-      "-g", "60",
-      "-f", "flv",
-      streamUrl,
+      "-re",                            // Read from input at its native framerate. Best for real-time/streaming output.
+      "-f", "lavfi", "-i", "anullsrc",  // No input audio.
+      "-i", "-",                        // Use stdin for video (from raspivid).
+      "-acodec", "aac",                 // Use AAC codec for audio (Periscope requirement).
+      "-b:a", "0",                      // Zero audio bitrate since we have no input audio.
+      "-map", "0:a",                    // Use stream 0 for audio (anullsrc).
+      "-map", "1:v",                    // Use stream 1 for video (stdin).
+      "-f", "h264",                     // Use H.264 codec for video (Periscope requirement).
+      "-vcodec", "copy",                // Copy video data directly from input.
+      "-g", "60",                       // Keyframe interval: one keyframe every 60 frames (2 seconds for 30 fps video; Periscope requirement).
+      "-f", "flv",                      // Package output in a Flash Video container (Periscope requirement).
+      streamUrl,                        // RTMP streaming destination.
     )
 
     ffmpegStdin, err := ffmpeg.StdinPipe()
