@@ -131,6 +131,16 @@ func runStream(config *configuration) error {
     "compression_quality": quality,
     "video_bitrate_mode": "1",
     "video_bitrate": bitrate,
+    "vertical_flip": "0",
+    "horizontal_flip": "0",
+  }
+
+  if config.Video.VFlip {
+    controlProps["vertical_flip"] = "1"
+  }
+
+  if config.Video.HFlip {
+    controlProps["horizontal_flip"] = "1"
   }
 
   v4l2 = exec.Command("v4l2-ctl", "--set-ctrl=" + joinProps(controlProps, "=", ","))
@@ -142,65 +152,31 @@ func runStream(config *configuration) error {
     return err
   }
 
-  raspividArgs := []string{
-    "-o", "-",                        // Write video to stdout.
-    "-t", "0",                        // Continuous capturing (no timeout).
-    "-w", width,                      // Output video width.
-    "-h", height,                     // Output video height.
-    "-fps", "30",                     // Capture video at 30 frames per second.
-    "-b", bitrate,                    // Capture video bitrate.
-  }
-
-  if config.Video.VFlip {
-    raspividArgs = append(raspividArgs, "-vf")
-  }
-
-  if config.Video.HFlip {
-    raspividArgs = append(raspividArgs, "-hf")
-  }
-
-  raspivid := exec.Command("raspivid", raspividArgs...)
-
   ffmpegArgs := []string{
-    "-re",                            // Read from input at its native framerate. Best for real-time/streaming output.
-    "-f", "lavfi", "-i", "anullsrc",  // No input audio.
-    "-i", "-",                        // Use stdin for video (from raspivid).
-    "-acodec", "aac",                 // Use AAC codec for audio (Periscope requirement).
-    "-b:a", "0",                      // Zero audio bitrate since we have no input audio.
-    "-map", "0:a",                    // Use stream 0 for audio (anullsrc).
-    "-map", "1:v",                    // Use stream 1 for video (stdin).
-    "-f", "h264",                     // Use H.264 codec for video (Periscope requirement).
-    "-vcodec", "copy",                // Copy video data directly from input.
-    "-g", "60",                       // Keyframe interval: one keyframe every 60 frames (2 seconds for 30 fps video; Periscope requirement).
-    "-f", "flv",                      // Package output in a Flash Video container (Periscope requirement).
-    streamUrl,                        // RTMP streaming destination.
+    "-re",                              // Read from input at its native framerate. Best for real-time/streaming output.
+    "-f", "lavfi", "-i", "anullsrc",    // No input audio.
+    "-f", "h264", "-i", "/dev/video0",  // Use H.264-formatted video from /dev/video0.
+    "-acodec", "aac",                   // Use AAC codec for audio (Periscope requirement).
+    "-b:a", "0",                        // Zero audio bitrate since we have no input audio.
+    "-map", "0:a",                      // Use stream 0 for audio (anullsrc).
+    "-map", "1:v",                      // Use stream 1 for video (stdin).
+    "-f", "h264",                       // Use H.264 codec for video (Periscope requirement).
+    "-vcodec", "copy",                  // Copy video data directly from input.
+    "-g", "60",                         // Keyframe interval: one keyframe every 60 frames (2 seconds for 30 fps video; Periscope requirement).
+    "-f", "flv",                        // Package output in a Flash Video container (Periscope requirement).
+    streamUrl,                          // RTMP streaming destination.
   }
 
   ffmpeg := exec.Command("ffmpeg", ffmpegArgs...)
-
-  ffmpegStdin, err := ffmpeg.StdinPipe()
-  if err != nil {
-    return err
-  }
-
-  raspivid.Stderr = os.Stderr
-  raspivid.Stdout = ffmpegStdin
   ffmpeg.Stdout = os.Stdout
   ffmpeg.Stderr = os.Stderr
 
   defer func () {
-    raspivid.Wait()
-    ffmpegStdin.Close()
     ffmpeg.Wait()
   }()
 
   showCommand(ffmpeg)
   if err := ffmpeg.Start(); err != nil {
-    return err
-  }
-
-  showCommand(raspivid)
-  if err := raspivid.Start(); err != nil {
     return err
   }
 
