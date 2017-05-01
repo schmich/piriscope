@@ -11,5 +11,5 @@ smoke: piriscope.go
 
 upload: *.deb
 	ssh pi@pi "rm ~/piriscope*.deb" && \
-	scp *.deb pi@pi:~/ && \
+	scp piriscope*.deb pi@pi:~/ && \
 	ssh pi@pi "sudo dpkg -P piriscope && sudo dpkg -i ~/piriscope*.deb"
