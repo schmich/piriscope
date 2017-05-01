@@ -1,6 +1,6 @@
 # Piriscope
 
-Stream to Periscope from the Raspberry Pi.
+Stream to [Periscope](https://www.periscope.tv/) from the [Raspberry Pi](https://www.raspberrypi.org/products/).
 
 ## Setup
 
