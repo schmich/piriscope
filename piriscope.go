@@ -231,7 +231,7 @@ func main() {
 
       err = json.Unmarshal(content, &fileConfig)
       if err != nil {
-        log.Fatal(err)
+        log.Fatal("Error in configuration file: ", err)
       }
     }
 
@@ -245,6 +245,8 @@ func main() {
         Sharpness: 30,
         Quality: 80,
         Bitrate: 800000,
+        VFlip: false,
+        HFlip: false,
       },
     }
 
