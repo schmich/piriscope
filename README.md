@@ -2,7 +2,16 @@
 
 Stream to [Periscope](https://www.periscope.tv/) from the [Raspberry Pi](https://www.raspberrypi.org/products/).
 
-## As a Raspbian Package (.deb)
+## Hardware Setup
+
+You will need the following:
+
+- Raspberry Pi
+- [Raspberry Pi Camera Module v2](https://www.raspberrypi.org/products/camera-module-v2/) ([shop](https://www.adafruit.com/product/3099))
+
+## Software Setup
+
+### As a Raspbian Package (.deb)
 
 ```
 apt-get install x264 v4l-utils
@@ -14,7 +23,7 @@ curl -LO ...
 dpkg -i piriscope-0.0.1-1_armhf.deb
 ```
 
-## As a Docker Container
+### As a Docker Container
 
 [Install Docker](https://www.raspberrypi.org/blog/docker-comes-to-raspberry-pi/) and run the container.
 
@@ -23,7 +32,7 @@ curl -sSL https://get.docker.com | sh
 docker run -d --privileged --restart always -v /dev/video0:/dev/video0 schmich/piriscope:1.0.0 -k <key>
 ```
 
-## As a Standalone Program
+### As a Standalone Program
 
 ```
 apt-get install x264 v4l-utils
