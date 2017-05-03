@@ -2,67 +2,38 @@
 
 Stream to [Periscope](https://www.periscope.tv/) from the [Raspberry Pi](https://www.raspberrypi.org/products/).
 
-## Setup
-
-Raspberry Pi:
-
-- Download/install Etcher
-- Download RPi image
-- Flash image to SD card
-- `touch /Volumes/boot/ssh`
-- `cp wpa_supplicant.conf /Volumes/boot`
-- `sudo raspi-config` (enable SSH, enable camera)
-- (setup SSH keys)
-- (remove password-based SSH)
-- (update pi user password)
-- `sudo apt-get install -y vlc`
-- https://www.jeffgeerling.com/blogs/jeff-geerling/raspberry-pi-zero-conserve-energy
-- `sudo update-rc.d -f bluetooth remove`
-
-Video setup (maybe unnecessary with `raspivid`):
-
-- `sudo modprobe bcm2835-v4l2`
-- `echo bcm2835-v4l2 | sudo tee -a /etc/modules`
-
-Server URL: rtmp://va.pscp.tv:80/x  
-Stream name/key: xxxxxxxxxxxxx
-
-http://www.kianryan.co.uk/2015/10/buliding-a-youtube-live-streaming-camera-with-a-raspberry-pi/
-
-Periscope video requirements
-  - Audio stream is required
-  - FPS, resolution, video codec, bitrate
-
-Enable raspivid, drivers, etc.
+## As a Raspbian Package (.deb)
 
 ```
-wget https://github.com/ccrisan/motioneye/wiki/precompiled/ffmpeg_3.1.1-1_armhf.deb
-sudo dpkg -i ffmpeg_3.1.1-1_armhf.deb
-raspivid -o - -t 0 -w 960 -h 540 -vf -hf -fps 30 -b 800000 |\
-  ffmpeg -re -f lavfi -i anullsrc -i - -acodec aac -b:a 0 -map 0:a -map 1:v -f h264 -vcodec copy -g 60 -f flv rtmp://va.pscp.tv:80/x/xxxxxxxxxxxx
+apt-get install x264 v4l-utils
+sudo modprobe bcm2835-v4l2
+echo bcm2835-v4l2 | sudo tee -a /etc/modules
+curl -LO https://github.com/ccrisan/motioneye/wiki/precompiled/ffmpeg_3.1.1-1_armhf.deb
+dpkg -i ffmpeg_3.1.1-1_armhf.deb
+curl -LO ...
+dpkg -i piriscope-0.0.1-1_armhf.deb
 ```
 
-Periscope:
+## As a Docker Container
 
-- Steps to enable stream via Periscope app
-- App/phone required?
-- Screencast from phone
+[Install Docker](https://www.raspberrypi.org/blog/docker-comes-to-raspberry-pi/) and run the container.
 
-## Configuration
+```
+curl -sSL https://get.docker.com | sh
+docker run -d --privileged --restart always -v /dev/video0:/dev/video0 schmich/piriscope:1.0.0 -k <key>
+```
 
-- Stream name/key
-- Portrait vs. landscape video
-- Horizontal/vertical flip
-- Bitrate (Periscope guidelines)
-- FPS (Periscope guidelines)
-- Other/arbitrary `raspivid`/`ffmpeg` options
+## As a Standalone Program
 
-## Packaging
-
-- Bare script, roll-your-own
-- Debian service
-- Debian package (.deb)
-- Flashable Raspbian image, configuration via `/boot`
+```
+apt-get install x264 v4l-utils
+sudo modprobe bcm2835-v4l2
+echo bcm2835-v4l2 | sudo tee -a /etc/modules
+curl -LO https://github.com/ccrisan/motioneye/wiki/precompiled/ffmpeg_3.1.1-1_armhf.deb
+dpkg -i ffmpeg_3.1.1-1_armhf.deb
+curl -LO ...
+piriscope -k ...
+```
 
 ## License
 
