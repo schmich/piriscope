@@ -8,8 +8,14 @@ You will need the following:
 
 - Raspberry Pi
 - [Raspberry Pi Camera Module v2](https://www.raspberrypi.org/products/camera-module-v2/) ([shop](https://www.adafruit.com/product/3099))
+- Raspberry Pi Zero v1.3 Camera Cable ([shop](https://www.adafruit.com/product/3157))
+- Storage
 
 ## Software Setup
+
+Piriscope is designed to work with [Raspbian](https://www.raspberrypi.org/downloads/raspbian/).
+
+- [Install Raspbian](https://www.raspberrypi.org/documentation/installation/installing-images/)
 
 ### As a Raspbian Package (.deb)
 
